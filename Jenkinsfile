@@ -3,6 +3,7 @@ pipeline {
       registry = "registry.cn-hangzhou.aliyuncs.com/sunnylua/learning"
       registryCredential = 'a8ca8156-0a2e-47a7-9ee5-cb169aab989a'
 	  dockerImage = ''
+	  tag = '1.0'
     }
 	agent none
     stages {
@@ -20,7 +21,7 @@ pipeline {
 		stage('Build Image') {
 			steps {
 			    script {
-				    dockerImage = docker.build registry + ":1.0"
+				    dockerImage = docker.build registry + ":$tag"
 			    }
 			}
 		}
@@ -30,7 +31,12 @@ pipeline {
                     docker.withRegistry(registry, registryCredential ) { 
                         dockerImage.push()
                     }
-                } 
+                }
+            }
+        }
+        stage('Clean image') { 
+            steps { 
+                sh "docker rmi $registry:$tag"
             }
         }
     }
