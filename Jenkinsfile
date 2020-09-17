@@ -1,15 +1,26 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven'
-            args '-v /root/.m2:/root/.m2'
-        }
+    environment {
+      registry = "registry.cn-hangzhou.aliyuncs.com/sunnylua/learning"
+      registryCredential = 'a8ca8156-0a2e-47a7-9ee5-cb169aab989a'
+	  dockerImage = ''
     }
+	agent none
     stages {
-        stage('Build') { 
+        stage('Build Package') {
+			agent {
+				docker {
+					image 'maven'
+					args '-v /root/.m2:/root/.m2'
+				}
+			}
             steps {
                 sh 'mvn -B -DskipTests clean package' 
             }
         }
+		stage('Build Image') {
+			steps {
+				dockerImage = docker.build registry + ":1.0"
+			}
+		}
     }
 }
