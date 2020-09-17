@@ -19,8 +19,19 @@ pipeline {
         }
 		stage('Build Image') {
 			steps {
-				dockerImage = docker.build registry + ":1.0"
+			    script {
+				    dockerImage = docker.build registry + ":1.0"
+			    }
 			}
 		}
+        stage('Push image') { 
+            steps { 
+                script { 
+                    docker.withRegistry( '', registryCredential ) { 
+                        dockerImage.push()
+                    }
+                } 
+            }
+        }
     }
 }
